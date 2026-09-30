@@ -1,0 +1,123 @@
+{
+  "settings": {
+    "vehicle_id": "SV-001",
+    "emergency_phone": "+91 7530022946",
+    "threshold": 300,
+    "monitoring_active": true,
+    "buzzer_enabled": true,
+    "auto_sms_enabled": true
+  },
+  "hardware": {
+    "esp32": "CONNECTED",
+    "mq3": "CONNECTED",
+    "gps": "CONNECTED",
+    "gsm": "CONNECTED",
+    "motor": "CONNECTED"
+  },
+  "telemetry": {
+    "vehicle_status": "STOPPED",
+    "alcohol_status": "ALCOHOL DETECTED",
+    "alcohol_level": 384,
+    "safety_status": "DANGER",
+    "latitude": 11.0168,
+    "longitude": 76.9558,
+    "location_name": "Coimbatore, Tamil Nadu, India",
+    "last_alert_time": "27-09-2026 22:51:56",
+    "buzzer_active": true,
+    "stop_reason": "Simulated MQ-3 Spike",
+    "stopped_at": "27-09-2026 22:51:56"
+  },
+  "last_sms": {
+    "phone": "+91 7530022946",
+    "text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 27-09-2026 22:51:56",
+    "timestamp": "27-09-2026 22:51:56",
+    "status": "SENT"
+  },
+  "incidents": [
+    {
+      "id": "INC-7132",
+      "vehicle_id": "SV-001",
+      "type": "Alcohol Detected",
+      "alcohol_level": 384,
+      "threshold": 300,
+      "date": "27-09-2026",
+      "time": "22:51:56",
+      "timestamp": 1790529716197,
+      "latitude": 11.0168,
+      "longitude": 76.9558,
+      "location": "Coimbatore, Tamil Nadu, India",
+      "vehicle_status": "Vehicle Stopped",
+      "alert_status": "SMS Sent",
+      "phone_number": "+91 7530022946",
+      "sms_text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 27-09-2026 22:51:56"
+    },
+    {
+      "id": "INC-9994",
+      "vehicle_id": "SV-001",
+      "type": "Alcohol Detected",
+      "alcohol_level": 383,
+      "threshold": 300,
+      "date": "27-09-2026",
+      "time": "22:51:56",
+      "timestamp": 1790529716173,
+      "latitude": 11.0168,
+      "longitude": 76.9558,
+      "location": "Coimbatore, Tamil Nadu, India",
+      "vehicle_status": "Vehicle Stopped",
+      "alert_status": "SMS Sent",
+      "phone_number": "+91 7530022946",
+      "sms_text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 27-09-2026 22:51:56"
+    },
+    {
+      "id": "INC-3673",
+      "vehicle_id": "SV-001",
+      "type": "Alcohol Detected",
+      "alcohol_level": 300,
+      "threshold": 300,
+      "date": "27-09-2026",
+      "time": "22:51:55",
+      "timestamp": 1790529715847,
+      "latitude": 11.0168,
+      "longitude": 76.9558,
+      "location": "Coimbatore, Tamil Nadu, India",
+      "vehicle_status": "Vehicle Stopped",
+      "alert_status": "SMS Sent",
+      "phone_number": "+91 7530022946",
+      "sms_text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 27-09-2026 22:51:55"
+    },
+    {
+      "id": "INC-5681",
+      "vehicle_id": "SV-001",
+      "type": "Alcohol Detected",
+      "alcohol_level": 540,
+      "threshold": 300,
+      "date": "27-09-2026",
+      "time": "10:06:32",
+      "timestamp": 1790483792608,
+      "latitude": 11.0168,
+      "longitude": 76.9558,
+      "location": "Coimbatore, Tamil Nadu, India",
+      "vehicle_status": "Vehicle Stopped",
+      "alert_status": "SMS Sent",
+      "phone_number": "+91 9876543210",
+      "sms_text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 27-09-2026 10:06:32"
+    },
+    {
+      "id": "INC-1001",
+      "vehicle_id": "SV-001",
+      "type": "Alcohol Detected",
+      "alcohol_level": 520,
+      "threshold": 300,
+      "date": "26-09-2026",
+      "time": "14:30:15",
+      "timestamp": 1790476120741,
+      "latitude": 11.0168,
+      "longitude": 76.9558,
+      "location": "Coimbatore",
+      "vehicle_status": "Vehicle Stopped",
+      "alert_status": "SMS Sent",
+      "phone_number": "+91 9876543210",
+      "sms_text": "🚨 SAFETY ALERT\nAlcohol detected in vehicle.\nVehicle has been stopped automatically.\nVehicle ID: SV-001\nLocation: https://maps.google.com/?q=11.0168,76.9558\nTime: 26-09-2026 14:30:15"
+    }
+  ]
+}

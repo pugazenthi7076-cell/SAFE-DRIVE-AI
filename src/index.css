@@ -1,0 +1,651 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=Cinzel:wght@500;600;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@import "leaflet/dist/leaflet.css";
+
+@layer base {
+  :root {
+    --bg-dark: #07090e;
+    --card-bg: rgba(14, 18, 26, 0.78);
+    --border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body {
+    background-color: #07090e;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Apply monospace font to code-like elements */
+  code, pre, .font-mono {
+    font-family: 'Space Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  .font-display {
+    font-family: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+  }
+
+  .font-ora-serif {
+    font-family: 'Cinzel', Georgia, serif;
+    letter-spacing: 0.18em;
+  }
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+@keyframes emergencyPulse {
+  0%, 100% {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.8);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    background-color: rgba(239, 68, 68, 0.35);
+    border-color: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 40px rgba(239, 68, 68, 0.8), 0 0 80px rgba(239, 68, 68, 0.3);
+  }
+}
+
+@keyframes safeGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+  }
+}
+
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes dataStream {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes scanLine {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes numberTick {
+  0%   { transform: scale(1.15); color: #22d3ee; }
+  100% { transform: scale(1);    color: inherit; }
+}
+
+/* ============================================
+   ANIMATION UTILITY CLASSES
+   ============================================ */
+
+.animate-emergency-pulse {
+  animation: emergencyPulse 1.2s infinite ease-in-out;
+}
+
+.animate-safe-glow {
+  animation: safeGlow 3s infinite ease-in-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fadeInLeft {
+  animation: fadeInLeft 0.35s ease-out both;
+}
+
+.animate-data-stream {
+  animation: dataStream 1.5s ease-in-out infinite;
+}
+
+.radar-spinner {
+  animation: radarSweep 4s linear infinite;
+}
+
+/* ============================================
+   GLASSMORPHISM CARD
+   ============================================ */
+
+.glass-card {
+  background: rgba(10, 18, 36, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+/* ============================================
+   SHIMMER / SKELETON LOADING EFFECT
+   ============================================ */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 200% auto;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ============================================
+   STATUS INDICATOR DOT
+   ============================================ */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.connected {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  animation: safeGlow 2s infinite;
+}
+
+.status-dot.disconnected {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  animation: emergencyPulse 1s infinite;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a1224;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e3a5f;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+/* ============================================
+   LEAFLET MAP OVERRIDES
+   ============================================ */
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  z-index: 10;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.75rem !important;
+}
+
+.leaflet-popup-tip {
+  background: #0f172a !important;
+}
+
+/* ============================================
+   RANGE INPUT CUSTOM STYLE
+   ============================================ */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #22d3ee;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+  transition: box-shadow 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.8);
+}
+
+/* ============================================
+   FORM INPUT FOCUS GLOW
+   ============================================ */
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+
+/* ============================================
+   TABLE ROW HOVER ANIMATION
+   ============================================ */
+
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover td:first-child {
+  border-left: 2px solid rgba(59, 130, 246, 0.5);
+}
+
+/* ============================================
+   BUTTON PRESS MICRO-INTERACTION
+   ============================================ */
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* ============================================
+   DUAL THEME STYLING: WHITE (DEFAULT) & BLACK (OPTIONAL)
+   ============================================ */
+
+/* LIGHT MODE OVERRIDES (DEFAULT) */
+body.theme-light,
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+}
+
+body.theme-light .bg-slate-950,
+html:not(.dark) .bg-slate-950 {
+  background-color: #f8fafc !important;
+}
+
+body.theme-light .bg-slate-900,
+html:not(.dark) .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+body.theme-light .bg-slate-900\/95,
+body.theme-light .bg-slate-900\/90,
+body.theme-light .bg-slate-900\/80,
+html:not(.dark) .bg-slate-900\/95,
+html:not(.dark) .bg-slate-900\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.theme-light .bg-slate-800,
+html:not(.dark) .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+
+body.theme-light .bg-slate-800\/80,
+body.theme-light .bg-slate-800\/60,
+body.theme-light .bg-slate-800\/50,
+body.theme-light .bg-slate-800\/40,
+html:not(.dark) .bg-slate-800\/80,
+html:not(.dark) .bg-slate-800\/60,
+html:not(.dark) .bg-slate-800\/50,
+html:not(.dark) .bg-slate-800\/40 {
+  background-color: #f1f5f9 !important;
+}
+
+/* Borders in Light Mode */
+body.theme-light .border-slate-800,
+body.theme-light .border-slate-700,
+body.theme-light .border-slate-700\/60,
+body.theme-light .border-slate-700\/50,
+body.theme-light .border-slate-700\/40,
+body.theme-light .border-slate-700\/80,
+html:not(.dark) .border-slate-800,
+html:not(.dark) .border-slate-700,
+html:not(.dark) .border-slate-700\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Glass Card in Light Mode */
+body.theme-light .glass-card,
+html:not(.dark) .glass-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.theme-light .glass-card-hover:hover,
+html:not(.dark) .glass-card-hover:hover {
+  border-color: #93c5fd !important;
+  box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Typography in Light Mode */
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light h4,
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4 {
+  color: #0f172a !important;
+}
+
+/* Protect white text on colored buttons */
+body.theme-light .text-white:not(
+  button[class*="bg-blue"],
+  button[class*="bg-emerald"],
+  button[class*="bg-red"],
+  button[class*="bg-amber"],
+  button[class*="bg-purple"],
+  button[class*="bg-gradient"],
+  button[class*="bg-indigo"],
+  a[class*="bg-blue"],
+  .badge-white,
+  .custom-leaflet-marker *
+),
+html:not(.dark) .text-white:not(
+  button[class*="bg-blue"],
+  button[class*="bg-emerald"],
+  button[class*="bg-red"],
+  button[class*="bg-amber"],
+  button[class*="bg-purple"],
+  button[class*="bg-gradient"],
+  button[class*="bg-indigo"],
+  a[class*="bg-blue"],
+  .badge-white,
+  .custom-leaflet-marker *
+) {
+  color: #0f172a !important;
+}
+
+body.theme-light .text-slate-100,
+html:not(.dark) .text-slate-100 {
+  color: #0f172a !important;
+}
+
+body.theme-light .text-slate-200,
+html:not(.dark) .text-slate-200 {
+  color: #1e293b !important;
+}
+
+body.theme-light .text-slate-300,
+html:not(.dark) .text-slate-300 {
+  color: #334155 !important;
+}
+
+body.theme-light .text-slate-400,
+html:not(.dark) .text-slate-400 {
+  color: #64748b !important;
+}
+
+body.theme-light .text-slate-500,
+html:not(.dark) .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Form inputs & controls in Light Mode */
+body.theme-light input[type="text"],
+body.theme-light input[type="number"],
+body.theme-light select,
+body.theme-light textarea,
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="number"],
+html:not(.dark) select,
+html:not(.dark) textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light input[type="text"]:focus,
+body.theme-light input[type="number"]:focus,
+body.theme-light select:focus,
+body.theme-light textarea:focus,
+html:not(.dark) input[type="text"]:focus,
+html:not(.dark) input[type="number"]:focus,
+html:not(.dark) select:focus,
+html:not(.dark) textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Header in Light Mode */
+body.theme-light header,
+html:not(.dark) header {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Sidebar in Light Mode */
+body.theme-light aside,
+html:not(.dark) aside {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light aside nav button:not([class*="bg-blue-600"]):not([class*="text-red"]),
+html:not(.dark) aside nav button:not([class*="bg-blue-600"]):not([class*="text-red"]) {
+  color: #475569 !important;
+}
+
+body.theme-light aside nav button:not([class*="bg-blue-600"]):not([class*="text-red"]):hover,
+html:not(.dark) aside nav button:not([class*="bg-blue-600"]):not([class*="text-red"]):hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Footer in Light Mode */
+body.theme-light footer,
+html:not(.dark) footer {
+  background-color: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+/* Tables in Light Mode */
+body.theme-light thead,
+body.theme-light thead tr,
+html:not(.dark) thead,
+html:not(.dark) thead tr {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light thead th,
+html:not(.dark) thead th {
+  color: #475569 !important;
+}
+
+body.theme-light tbody tr,
+html:not(.dark) tbody tr {
+  border-color: #f1f5f9 !important;
+}
+
+body.theme-light tbody tr:hover,
+html:not(.dark) tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Leaflet Popup in Light Mode */
+body.theme-light .leaflet-popup-content-wrapper,
+html:not(.dark) .leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.theme-light .leaflet-popup-tip,
+html:not(.dark) .leaflet-popup-tip {
+  background: #ffffff !important;
+}
+
+/* Floating Dock in Light Mode */
+body.theme-light .fixed.bottom-5.right-5 button,
+body.theme-light .fixed.bottom-5.right-5 > div {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Scrollbars in Light Mode */
+body.theme-light ::-webkit-scrollbar-track,
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+
+body.theme-light ::-webkit-scrollbar-thumb,
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+body.theme-light ::-webkit-scrollbar-thumb:hover,
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* ============================================
+   SCROLLTIDE ORA DESIGN SYSTEM TOKENS & UTILITIES
+   ============================================ */
+
+.tide-glow {
+  background: radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.16) 0%, rgba(14, 165, 233, 0.05) 50%, transparent 75%);
+}
+
+.tide-glow-intense {
+  background: radial-gradient(circle at 50% 15%, rgba(56, 189, 248, 0.25) 0%, rgba(37, 99, 235, 0.1) 45%, transparent 75%);
+}
+
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+.ora-viewport-frame {
+  border-radius: 28px;
+  background-color: #060910;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: 
+    0 35px 120px -25px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 60px -10px rgba(56, 189, 248, 0.22);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ora-card {
+  background: rgba(14, 18, 28, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1.25rem;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ora-card:hover {
+  border-color: rgba(56, 189, 248, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px -15px rgba(56, 189, 248, 0.25);
+}
+
+.ora-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+}
+
+.ora-tag:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+}
+
+.ora-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.1);
+  color: #7dd3fc;
+  box-shadow: 0 0 16px -2px rgba(56, 189, 248, 0.3);
+}
+
+.ora-pill-bone {
+  background-color: #f8fafc;
+  color: #05070a;
+  font-weight: 600;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+}
+
+.ora-pill-bone:hover {
+  background-color: #ffffff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+
