@@ -35,11 +35,11 @@ export const Sidebar = ({ currentTab, setCurrentTab }) => {
 
 
   return (
-    <aside className="w-full md:w-64 bg-[#07090f]/95 border-r border-white/[0.08] flex flex-col justify-between shrink-0">
+    <aside className="w-full md:w-64 bg-slate-900/95 border-r border-slate-800 flex flex-col justify-between shrink-0">
       <div className="p-3 lg:p-4">
         {/* Navigation Section Title */}
-        <div className="px-3 py-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase font-mono">
-          SYSTEM NAVIGATION
+        <div className="px-3 py-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+          System Navigation
         </div>
 
         {/* Links */}
@@ -51,17 +51,17 @@ export const Sidebar = ({ currentTab, setCurrentTab }) => {
               <button
                 key={item.id}
                 onClick={() => setCurrentTab(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-sky-500/15 text-sky-300 border border-sky-400/40 shadow-[0_0_15px_rgba(56,189,248,0.15)]'
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-sm'
                     : item.danger
-                    ? 'text-red-400 hover:text-red-300 hover:bg-red-950/20 border border-transparent hover:border-red-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'text-red-400 hover:text-red-300 hover:bg-red-900/20 border border-transparent hover:border-red-800/40'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon className={`w-4 h-4 ${
-                    isActive ? 'text-sky-400' : item.danger ? 'text-red-400 animate-pulse' : 'text-slate-400'
+                    isActive ? 'text-blue-400' : item.danger ? 'text-red-400 animate-pulse' : 'text-slate-400'
                   }`} />
                   <span>{item.label}</span>
                 </div>

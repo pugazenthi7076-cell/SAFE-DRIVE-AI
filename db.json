@@ -15,17 +15,17 @@
     "motor": "CONNECTED"
   },
   "telemetry": {
-    "vehicle_status": "STOPPED",
-    "alcohol_status": "ALCOHOL DETECTED",
-    "alcohol_level": 384,
-    "safety_status": "DANGER",
+    "vehicle_status": "RUNNING",
+    "alcohol_status": "SAFE",
+    "alcohol_level": 110,
+    "safety_status": "SAFE",
     "latitude": 11.0168,
     "longitude": 76.9558,
     "location_name": "Coimbatore, Tamil Nadu, India",
     "last_alert_time": "27-09-2026 22:51:56",
-    "buzzer_active": true,
-    "stop_reason": "Simulated MQ-3 Spike",
-    "stopped_at": "27-09-2026 22:51:56"
+    "buzzer_active": false,
+    "stop_reason": null,
+    "stopped_at": null
   },
   "last_sms": {
     "phone": "+91 7530022946",

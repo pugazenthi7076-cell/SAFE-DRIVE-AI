@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { SystemProvider } from './context/SystemContext';
-import { OraFrameWrapper } from './components/OraFrameWrapper';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { SimulationBar } from './components/SimulationBar';
@@ -23,7 +22,6 @@ import { VehicleStopView } from './views/VehicleStopView';
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const renderCurrentView = () => {
     switch (currentTab) {
@@ -54,45 +52,43 @@ function AppContent() {
   };
 
   return (
-    <OraFrameWrapper
-      currentTab={currentTab}
-      setCurrentTab={setCurrentTab}
-      onOpenResetModal={() => setIsResetModalOpen(true)}
-      onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
-    >
-      {/* Viewport Internal Header */}
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans selection:bg-blue-600 selection:text-white transition-colors duration-200">
+      
+      {/* Top Header */}
       <Header onOpenResetModal={() => setIsResetModalOpen(true)} />
-
-      {/* SIH Step-by-Step Live Demo Tracker */}
-      <DemoFlowBar />
-
-      {/* Main Layout Body inside the Ora Viewport */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#07090e]">
-        
-        {/* Left Sidebar (collapsible via OraTopBar menu button) */}
-        {isSidebarOpen && (
-          <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
-        )}
-
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto pb-12 bg-[#07090e]">
-          {/* Prominent Emergency Warning Banner when Stopped */}
-          <EmergencyWarningBanner onOpenResetModal={() => setIsResetModalOpen(true)} />
-
-          {/* Active View Content */}
-          <div className="p-1 sm:p-2">
-            {renderCurrentView()}
-          </div>
-        </main>
-      </div>
 
       {/* Floating Simulation Dock */}
       <SimulationBar />
 
+      {/* SIH Step-by-Step Live Demo Tracker */}
+      <DemoFlowBar />
+
+      {/* Main Layout Body */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        {/* Left Sidebar */}
+        <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
+
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto pb-12">
+          {/* Prominent Emergency Warning Banner when Stopped */}
+          <EmergencyWarningBanner onOpenResetModal={() => setIsResetModalOpen(true)} />
+
+          {/* Active View Content */}
+          {renderCurrentView()}
+        </main>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 border-t border-slate-800 px-6 py-3 text-center text-xs text-slate-500">
+        Smart Vehicle Safety & Alcohol Alert System • IoT Vehicle Safety Platform • Powered by ESP32, MQ-3, NEO-6M GPS & SIM800L GSM
+      </footer>
+
       {/* Modals */}
       <SmsModal />
       <ResetConfirmModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} />
-    </OraFrameWrapper>
+
+    </div>
   );
 }
 

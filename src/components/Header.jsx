@@ -16,24 +16,24 @@ export const Header = ({ onOpenResetModal }) => {
   } = useSystem();
 
   return (
-    <header className="sticky top-0 z-30 bg-[#090d15]/95 backdrop-blur-md border-b border-white/[0.08] px-4 lg:px-6 py-3">
+    <header className="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-6 py-3">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         {/* Title & SIH Badge */}
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-sky-500/10 border border-sky-400/30 rounded-xl text-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.2)]">
-            <Activity className="w-5 h-5 animate-pulse" />
+          <div className="p-2 bg-blue-600/20 border border-blue-500/30 rounded-xl text-blue-400">
+            <Activity className="w-6 h-6 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-base lg:text-lg font-bold text-white tracking-tight font-display">
+              <h1 className="text-lg lg:text-xl font-bold text-white tracking-wide">
                 Smart Vehicle Safety & Alcohol Alert System
-              </h2>
-              <span className="px-2.5 py-0.5 text-[10px] font-semibold rounded-full bg-sky-500/10 text-sky-300 border border-sky-400/30 font-mono uppercase tracking-wider">
-                LIVE TELEMETRY
+              </h1>
+              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30">
+                LIVE PROTOTYPE
               </span>
             </div>
-            <p className="text-xs text-slate-400 font-mono mt-0.5">
-              Vehicle ID: <span className="text-sky-400 font-semibold">{vehicleId}</span> • ESP32 + MQ-3 + NEO-6M Interfaced
+            <p className="text-xs text-slate-400">
+              Vehicle ID: <span className="text-blue-400 font-mono font-semibold">{vehicleId}</span> • IoT Based Safety & Emergency Alert Engine
             </p>
           </div>
         </div>
