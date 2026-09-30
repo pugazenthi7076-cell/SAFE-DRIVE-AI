@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,6 +15,10 @@ app.use(cors());
 app.use(express.json());
 
 const DB_FILE = path.join(__dirname, 'db.json');
+
+// MongoDB Connection URI (Accepts env or defaults to local MongoDB on port 27017)
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/safedrive';
+let isMongoConnected = false;
 
 // Initial default state
 const initialState = {
@@ -67,6 +72,40 @@ const initialState = {
   ]
 };
 
+// ============================================
+// MONGOOSE SCHEMAS & MODELS
+// ============================================
+
+const IncidentSchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  vehicle_id: String,
+  type: String,
+  alcohol_level: Number,
+  threshold: Number,
+  date: String,
+  time: String,
+  timestamp: Number,
+  latitude: Number,
+  longitude: Number,
+  location: String,
+  vehicle_status: String,
+  alert_status: String,
+  phone_number: String,
+  sms_text: String
+}, { timestamps: true });
+
+const Incident = mongoose.model('Incident', IncidentSchema);
+
+const SystemStateSchema = new mongoose.Schema({
+  key: { type: String, default: 'global_state', unique: true },
+  settings: Object,
+  hardware: Object,
+  telemetry: Object,
+  last_sms: Object
+}, { timestamps: true });
+
+const SystemState = mongoose.model('SystemState', SystemStateSchema);
+
 // Database utility functions
 function loadData() {
   try {
@@ -80,16 +119,45 @@ function loadData() {
   return initialState;
 }
 
+// In-memory data holder initialized from db.json
+let currentData = loadData();
+
+async function syncWithMongo() {
+  if (!isMongoConnected) return;
+  try {
+    // 1. Update State
+    await SystemState.findOneAndUpdate(
+      { key: 'global_state' },
+      {
+        key: 'global_state',
+        settings: currentData.settings,
+        hardware: currentData.hardware,
+        telemetry: currentData.telemetry,
+        last_sms: currentData.last_sms
+      },
+      { upsert: true, returnDocument: 'after' }
+    );
+
+    // 2. Sync any new incidents
+    if (currentData.incidents && currentData.incidents.length > 0) {
+      for (const inc of currentData.incidents) {
+        await Incident.findOneAndUpdate({ id: inc.id }, inc, { upsert: true });
+      }
+    }
+  } catch (err) {
+    console.error("[MONGODB] Sync error:", err.message);
+  }
+}
+
 function saveData(data) {
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
   } catch (err) {
     console.error("Error writing db.json", err);
   }
+  // Also asynchronously sync to MongoDB
+  syncWithMongo();
 }
-
-// In-memory data holder initialized from db.json
-let currentData = loadData();
 
 // Helper to construct SMS content
 function createSmsContent(vehicleId, lat, lng, timeStr) {
@@ -180,6 +248,16 @@ function resetSafetySystem() {
 
 // ---------------- API ENDPOINTS ----------------
 
+// Database Status Endpoint
+app.get('/api/db-status', (req, res) => {
+  res.json({
+    connected: isMongoConnected,
+    database: isMongoConnected ? 'MongoDB' : 'Local JSON Fallback',
+    uri: isMongoConnected ? MONGO_URI.replace(/\/\/.*@/, '//***@') : null,
+    incidents_count: currentData.incidents.length
+  });
+});
+
 // 1. Get System Status & Full Telemetry
 app.get('/api/status', (req, res) => {
   res.json({
@@ -187,7 +265,8 @@ app.get('/api/status', (req, res) => {
     hardware: currentData.hardware,
     telemetry: currentData.telemetry,
     last_sms: currentData.last_sms,
-    total_incidents: currentData.incidents.length
+    total_incidents: currentData.incidents.length,
+    database_connected: isMongoConnected
   });
 });
 
@@ -242,9 +321,16 @@ app.get('/api/incidents', (req, res) => {
 });
 
 // Clear Incidents API
-app.delete('/api/incidents', (req, res) => {
+app.delete('/api/incidents', async (req, res) => {
   currentData.incidents = [];
   saveData(currentData);
+  if (isMongoConnected) {
+    try {
+      await Incident.deleteMany({});
+    } catch (e) {
+      console.error("Error clearing Mongo incidents:", e);
+    }
+  }
   res.json({ success: true, message: "Incident history cleared" });
 });
 
@@ -268,7 +354,6 @@ app.post('/api/simulate', (req, res) => {
     currentData.telemetry.stop_reason = "Manual Engine Cut Simulation";
     currentData.telemetry.stopped_at = formatCurrentDateTime().full;
   } else if (action === "GPS_ALERT") {
-    // Generate simulated location update near Coimbatore / SIH Venue
     const randomLat = 11.0168 + (Math.random() - 0.5) * 0.04;
     const randomLng = 76.9558 + (Math.random() - 0.5) * 0.04;
     currentData.telemetry.latitude = Number(randomLat.toFixed(5));
@@ -299,10 +384,43 @@ app.post('/api/hardware-toggle', (req, res) => {
   res.json({ success: true, hardware: currentData.hardware });
 });
 
+// Initialize MongoDB connection and start server
+mongoose.connect(MONGO_URI)
+  .then(async () => {
+    isMongoConnected = true;
+    console.log(`[MONGODB] Connected successfully to ${MONGO_URI}`);
+    
+    // Seed or pull initial state
+    try {
+      const existingState = await SystemState.findOne({ key: 'global_state' });
+      if (existingState && existingState.settings) {
+        currentData.settings = existingState.settings;
+        currentData.hardware = existingState.hardware || currentData.hardware;
+        currentData.telemetry = existingState.telemetry || currentData.telemetry;
+        currentData.last_sms = existingState.last_sms || currentData.last_sms;
+      } else {
+        await syncWithMongo();
+      }
+
+      const mongoIncidents = await Incident.find({}).sort({ timestamp: -1 }).limit(100);
+      if (mongoIncidents && mongoIncidents.length > 0) {
+        currentData.incidents = mongoIncidents.map(doc => doc.toObject());
+      } else {
+        await syncWithMongo();
+      }
+    } catch (seedErr) {
+      console.error("[MONGODB] Seed / pull error:", seedErr.message);
+    }
+  })
+  .catch((err) => {
+    console.warn(`[MONGODB] Connection warning: ${err.message}. Running with db.json fallback.`);
+  });
+
 app.listen(PORT, () => {
   console.log(`=======================================================`);
   console.log(` Smart Vehicle Safety & Alcohol Alert System Server`);
   console.log(` Express API server listening on http://localhost:${PORT}`);
+  console.log(` MongoDB: ${MONGO_URI}`);
   console.log(` Hardware POST URL for ESP32: http://<YOUR_IP>:${PORT}/api/telemetry`);
   console.log(`=======================================================`);
 });
